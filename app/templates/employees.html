@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management</title>
+    <style>
+        /* General Page Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+
+        /* Department Summary Styling */
+        .department-summary {
+            margin-bottom: 20px;
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .department-summary ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .department-summary li {
+            margin: 5px 0;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Employee Card Styling */
+        .employee-card {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px; /* Added margin to separate the employee cards */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .employee-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .employee-header h3 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #007bff;
+        }
+
+        .employee-details {
+            margin-top: 5px;
+            color: #555;
+        }
+
+        .points-summary {
+            margin-top: 10px;
+        }
+
+        .edit-delete-links a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #dc3545;
+            cursor: pointer;
+        }
+
+        .edit-delete-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Flag Styling */
+        .flag {
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+
+        .green {
+            color: green;
+        }
+
+        .yellow {
+            color: orange;
+        }
+
+        .red {
+            color: red;
+        }
+
+        /* Pagination Styling */
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination a, .pagination strong {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #333;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .pagination strong {
+            font-weight: bold;
+            color: #007bff;
+            background-color: #e9ecef;
+        }
+
+        .pagination a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Search and Filter Form Styling */
+        form {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        form input, form select, form button {
+            margin: 0 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Occurrence Details Styling */
+        .occurrence-list {
+            margin-top: 10px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .occurrence-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .occurrence-item-header {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .collapse-button {
+            background: none;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .collapse-button:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+        <h2>Manage Employees</h2>
+
+        <!-- Update Button Section -->
+        <form method="POST" action="/update_employees" style="margin-bottom: 20px;">
+            <button type="submit">UPDATE</button>
+        </form>
+
+        <!-- Add Employee Form -->
+        <form method="POST" action="/employees" style="margin-bottom: 20px;" onsubmit="return disableSubmitButton(this);">
+
+            <label for="employee_name">Employee Name:</label>
+            <input type="text" id="employee_name" name="employee_name" required>
+
+            <label for="department">Department:</label>
+            <input type="text" id="department" name="department" required>
+
+            <button type="submit">Add Employee</button>
+        </form>
+
+        <!-- Export and Import Section -->
+        <div style="margin-bottom: 20px;">
+            <form method="GET" action="/export_employees" style="display: inline-block; margin-right: 10px;">
+                <button type="submit">Export to Excel</button>
+            </form>
+
+            <form method="POST" action="/import_employees" enctype="multipart/form-data" style="display: inline-block;">
+                <label for="file">Import Employees from Excel:</label>
+                <input type="file" name="file" accept=".xlsx" required>
+                <button type="submit">Import</button>
+            </form>
+        </div>
+
+        <!-- Department Summary Section -->
+        <div class="department-summary">
+            <h3>Department Statistics</h3>
+            <ul>
+                {% if department_stats %}
+                    {% for department, stats in department_stats.items() %}
+                        <li>{{ department }}: {{ stats['total'] }} employees, {{ stats['flagged'] }} flagged</li>
+                    {% endfor %}
+                {% else %}
+                    <li>No department data available</li>
+                {% endif %}
+            </ul>
+        </div>
+
+
+        <!-- Search and Filter Form -->
+        <form method="GET" action="/employees">
+            <label for="search">Search Employee:</label>
+            <input type="text" id="search" name="search" placeholder="Enter employee name">
+            <label for="department">Department:</label>
+            <input type="text" id="department" name="department" placeholder="Enter department">
+            <button type="submit">Search</button>
+            <button type="submit" name="flagged" value="true">Flagged</button>
+        </form>
+
+        <!-- Employee List and Counter -->
+        <h3>Employee List ({{ total_employees }} Total)</h3>
+        <div class="employee-container">
+            {% for employee in employees %}
+                <div class="employee-card"> <!-- Unified box for each employee starts here -->
+                    <div class="employee-header">
+                        <h3>{{ employee.name }}</h3>
+                        <a href="#" onclick="confirmDelete('{{ employee.name }}', '{{ employee.id }}')">Delete</a>
+                        <a href="#" onclick="toggleEditDepartment('{{ employee.id }}')">Edit</a> <!-- Edit button -->
+                    </div>
+
+                    <!-- Employee Department Section -->
+                    <div class="employee-details">
+                        Department: <span id="department-display-{{ employee.id }}">{{ employee.department }}</span>
+                    </div>
+
+                    <!-- Edit Department Form (initially hidden) -->
+                    <div id="edit-department-form-{{ employee.id }}" style="display: none; margin-top: 10px;">
+                        <form method="POST" action="/employee/edit_department/{{ employee.id }}">
+                            <label for="new_department">New Department:</label>
+                            <input type="text" id="new_department" name="new_department" required value="{{ employee.department }}">
+                            <button type="submit">Save</button>
+                            <button type="button" onclick="toggleEditDepartment('{{ employee.id }}')">Cancel</button>
+                        </form>
+                    </div>
+
+                    <!-- Points Summary -->
+                    <div class="points-summary">
+                        <p>Full Points: {{ employee.full_points }}
+                            {% if employee.full_points >= 7 %}
+                                <span class="flag {{ 'green' if employee.full_points == 7 else 'yellow' if employee.full_points == 8 else 'red' }}">&#9873;</span>
+                            {% endif %}
+                        </p>
+                        <p>Partial Points: {{ employee.partial_points }}
+                            {% if employee.partial_points >= 5 %}
+                                <span class="flag {{ 'green' if employee.partial_points == 5 else 'yellow' if employee.partial_points == 6 else 'red' }}">&#9873;</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Occurrence Form Section -->
+                    <div class="occurrence-form" style="margin-top: 10px;">
+                        <form method="POST" action="/employee/add_occurrence/{{ employee.id }}">
+                            <label for="occurrence_date">Date:</label>
+                            <input type="date" name="occurrence_date" id="occurrence_date" required>
+
+                            <label for="occurrence_type">Type:</label>
+                            <select name="occurrence_type" id="occurrence_type" required>
+                                <option value="Call In">Call In</option>
+                                <option value="Early Out">Early Out</option>
+                                <option value="Early In">Early In</option>
+                                <option value="Tardy">Tardy</option>
+                            </select>
+
+                            <label for="exception">Exception:</label>
+                            <input type="checkbox" name="exception" id="exception">
+
+                            <label for="exception_reason">Reason:</label>
+                            <input type="text" name="exception_reason" id="exception_reason" placeholder="Sick, Personal, etc.">
+
+                            <button type="submit">Add Occurrence</button>
+                        </form>
+                    </div>
+
+                    <!-- Occurrence List Section -->
+                    <div class="occurrence-list">
+                        <h4>Occurrences: <button class="collapse-button" onclick="toggleOccurrences(this)">Show</button></h4>
+                        <div class="occurrences-container" style="display: none;">
+                            {% for occurrence in employee.occurrences %}
+                                <div class="occurrence-item">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span><strong>Date:</strong> {{ occurrence.date }}</span>
+                                        <span><strong>Type:</strong> {{ occurrence.type }}</span>
+                                        <span><strong>Exception:</strong> {{ 'Yes' if occurrence.exception else 'No' }}</span>
+                                        <span><strong>Reason:</strong> {{ occurrence.reason }}</span>
+                                        <div class="edit-delete-links">
+                                            <a href="/employee/delete_occurrence/{{ employee.id }}/{{ loop.index0 }}">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div> <!-- Unified box for each employee ends here -->
+            {% endfor %}
+        </div>
+
+
+
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            {% if total_pages > 1 %}
+                <div>
+                    {% for page_num in range(1, total_pages + 1) %}
+                        {% if page_num == page %}
+                            <strong>{{ page_num }}</strong>
+                        {% else %}
+                            <a href="{{ url_for('employees_list', page=page_num, search=search_query, department=department_filter) }}">{{ page_num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Back to Dashboard Link -->
+        <div style="text-align: center; margin-top: 20px;">
+                        <a href="/dashboard" style="text-decoration: none; color: #007bff;">Back to Dashboard</a>
+                    </div>
+                </div> <!-- Close page-container div -->
+
+                <script>
+                    // Function to toggle occurrence details visibility
+                    function toggleOccurrences(button) {
+                        const occurrencesContainer = button.parentElement.nextElementSibling;
+                        if (occurrencesContainer.style.display === "none" || occurrencesContainer.style.display === "") {
+                            occurrencesContainer.style.display = "block";
+                            button.textContent = "Hide";
+                        } else {
+                            occurrencesContainer.style.display = "none";
+                            button.textContent = "Show";
+                        }
+                    }
+
+                    // Function to confirm deletion of an employee
+                    function confirmDelete(employeeName, employeeId) {
+                        const confirmation = confirm(`Are you sure you want to delete ${employeeName} and all their data?`);
+                        if (confirmation) {
+                            window.location.href = `/employee/delete/${employeeId}`;
+                        }
+                    }
+
+                        function toggleEditDepartment(employeeId) {
+                            const form = document.getElementById('edit-department-form-' + employeeId);
+                            const display = document.getElementById('department-display-' + employeeId);
+                            if (form.style.display === 'none' || form.style.display === '') {
+                                form.style.display = 'block';
+                                display.style.display = 'none';
+                            } else {
+                                form.style.display = 'none';
+                                display.style.display = 'block';
+                            }
+                        }
+
+                    // Prevent multiple form submissions
+                    function disableSubmitButton(form) {
+                        const submitButton = form.querySelector('button[type="submit"]');
+                        submitButton.disabled = true;
+                        submitButton.textContent = 'Adding...';
+                        return true; // Ensure the form is still submitted
+                    }
+                </script>
+            </body>
+            </html>
